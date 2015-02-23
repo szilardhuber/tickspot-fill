@@ -1,0 +1,15 @@
+{
+  "name": "tickspot-fill",
+  "version": "0.0.0",
+  "description": "Tiny utility to fill tickspot projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nomnom": "^1.8.1",
+    "request": "^2.53.0"
+  }
+}
