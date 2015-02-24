@@ -23,31 +23,44 @@ CLI_OPTIONS = {
     authToken: {
         full: 'auth',
         abbr: 'a',
-        help: 'the API authorization token. This can be found at: https://starschema.tickspot.com/users',
+        help: 'the API authorization token. This can be found at: https://tickspot.com/users',
         required: true
     },
     email: {
         full: 'email',
         abbr: 'e',
-        help: 'e-mail address',
+        help: 'Your tickspot e-mail address',
         required: true
+    },
+    subscription: {
+        full: 'subscription',
+        abbr: 's',
+        help: 'Tickspot subscription id. This can be found at: https://tickspot.com/users',
+        default: "12420"
+    },
+    hours: {
+        full: 'hours',
+        abbr: 'o',
+        help: 'Number of worked hours',
+        required: true,
+        default: 8
     }
 }
 
 var options = nomnom.options(CLI_OPTIONS).parse();
 
 var createEntry = function (date, options) {
-    var url = "https://www.tickspot.com/12420/api/v2/entries.json"
+    var url = "https://www.tickspot.com/" + options["subscription"] + "/api/v2/entries.json"
     var headers = {
         "Authorization": "Token token=" + options["authToken"],
         "User-Agent": "tickspot-fill " + options["email"]
     }
     var data = {
         "date": date,
-        "hours": 8,
+        "hours": options["hours"],
         "notes": "",
-        "task_id": options["task"],
-    }
+        "task_id": options["task"]
+    };
 
     request({
         headers: headers,
@@ -73,10 +86,10 @@ var year = options["year"];
 var month = options["month"] - 1;
 date = new Date(year, month, 1);
 while(date.getMonth() === month) {
-    weekDay = date.getDay()
+    weekDay = date.getDay();
     if (weekDay !== 0 && weekDay !== 6) {
         dateToPost = year + "-" + (month+1) + "-" + date.getDate();
         createEntry(dateToPost, options);
     }
-    date.setDate(date.getDate() + 1)
+    date.setDate(date.getDate() + 1);
 }
