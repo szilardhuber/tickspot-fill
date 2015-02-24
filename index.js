@@ -1,6 +1,5 @@
 var nomnom = require("nomnom");
 var request = require("request");
-var http = require("http");
 now = new Date();
 CLI_OPTIONS = {
     year: {
