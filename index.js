@@ -15,16 +15,16 @@ CLI_OPTIONS = {
         help: 'Target month',
         default: now.getMonth() + 1,
     },
-    project: {
-        full: 'project',
-        abbr: 'p',
+    task: {
+        full: 'task',
+        abbr: 't',
         default: '6771643',
-        help: 'the id of the project'
+        help: 'the id of the task. This can be found by hovering the mouse over the given task on Tickspot GUI.'
     },
     authToken: {
-        full: 'token',
-        abbr: 't',
-        help: 'the authorization token',
+        full: 'auth',
+        abbr: 'a',
+        help: 'the API authorization token. This can be found at: https://starschema.tickspot.com/users',
         required: true
     },
     email: {
@@ -47,7 +47,7 @@ var createEntry = function (date, options) {
         "date": date,
         "hours": 8,
         "notes": "",
-        "task_id": options["project"],
+        "task_id": options["task"],
     }
 
     request({
@@ -70,8 +70,9 @@ var createEntry = function (date, options) {
     });
 }
 
-date = new Date(options["year"], options["month"] - 1, 1);
-var month = date.getMonth();
+var year = options["year"]; 
+var month = options["month"] - 1;
+date = new Date(year, month, 1);
 while(date.getMonth() === month) {
     weekDay = date.getDay()
     if (weekDay !== 0 && weekDay !== 6) {
