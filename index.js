@@ -49,6 +49,28 @@ CLI_OPTIONS = {
 
 var options = nomnom.options(CLI_OPTIONS).parse();
 
+var getEntry = function (date, options, callback) {
+    var url = "https://www.tickspot.com/" + options["subscription"] + "/api/v2/entries.json"
+    var headers = {
+        "Authorization": "Token token=" + options["authToken"],
+        "User-Agent": "tickspot-fill " + options["email"]
+    }
+    var data = {
+        "start_date": date,
+        "end_date": date
+    }
+    request({
+        headers: headers,
+        url: url,
+        body: data,
+        json: true,
+        method: "GET",
+
+    }, function(error, response, body) {
+        callback(error, response, date);
+    });
+}
+
 var createEntry = function (date, options) {
     var url = "https://www.tickspot.com/" + options["subscription"] + "/api/v2/entries.json"
     var headers = {
@@ -88,8 +110,12 @@ date = new Date(year, month, 1);
 while(date.getMonth() === month) {
     weekDay = date.getDay();
     if (weekDay !== 0 && weekDay !== 6) {
-        dateToPost = year + "-" + (month+1) + "-" + date.getDate();
-        createEntry(dateToPost, options);
+        var dateToGet = year + "-" + (month+1) + "-" + date.getDate();
+        getEntry(dateToGet, options, function(error, response, dateToPost) {
+            if (!error && response.toJSON().body.length == 0) {
+                createEntry(dateToPost, options);
+            }
+        });
     }
     date.setDate(date.getDate() + 1);
 }
