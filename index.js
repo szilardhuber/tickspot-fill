@@ -1,5 +1,6 @@
 var nomnom = require("nomnom");
 var request = require("request");
+var http = require("http");
 now = new Date();
 CLI_OPTIONS = {
     year: {
@@ -17,40 +18,24 @@ CLI_OPTIONS = {
     task: {
         full: 'task',
         abbr: 't',
-        default: '6771643',
         help: 'the id of the task. This can be found by hovering the mouse over the given task on Tickspot GUI.'
     },
     authToken: {
         full: 'auth',
         abbr: 'a',
-        help: 'the API authorization token. This can be found at: https://tickspot.com/users',
-        required: true
+        help: 'the API authorization token. This can be found at: https://starschema.tickspot.com/users (Default is szhubers)',
     },
     email: {
         full: 'email',
         abbr: 'e',
-        help: 'Your tickspot e-mail address',
-        required: true
-    },
-    subscription: {
-        full: 'subscription',
-        abbr: 's',
-        help: 'Tickspot subscription id. This can be found at: https://tickspot.com/users',
-        default: "12420"
-    },
-    hours: {
-        full: 'hours',
-        abbr: 'o',
-        help: 'Number of worked hours',
-        required: true,
-        default: 8
+        help: 'e-mail address',
     }
 }
 
 var options = nomnom.options(CLI_OPTIONS).parse();
 
 var getEntry = function (date, options, callback) {
-    var url = "https://www.tickspot.com/" + options["subscription"] + "/api/v2/entries.json"
+    var url = "https://www.tickspot.com/12420/api/v2/entries.json"
     var headers = {
         "Authorization": "Token token=" + options["authToken"],
         "User-Agent": "tickspot-fill " + options["email"]
@@ -72,17 +57,17 @@ var getEntry = function (date, options, callback) {
 }
 
 var createEntry = function (date, options) {
-    var url = "https://www.tickspot.com/" + options["subscription"] + "/api/v2/entries.json"
+    var url = "https://www.tickspot.com/12420/api/v2/entries.json"
     var headers = {
         "Authorization": "Token token=" + options["authToken"],
         "User-Agent": "tickspot-fill " + options["email"]
     }
     var data = {
         "date": date,
-        "hours": options["hours"],
+        "hours": 8,
         "notes": "",
-        "task_id": options["task"]
-    };
+        "task_id": options["task"],
+    }
 
     request({
         headers: headers,
@@ -108,7 +93,7 @@ var year = options["year"];
 var month = options["month"] - 1;
 date = new Date(year, month, 1);
 while(date.getMonth() === month) {
-    weekDay = date.getDay();
+    weekDay = date.getDay()
     if (weekDay !== 0 && weekDay !== 6) {
         var dateToGet = year + "-" + (month+1) + "-" + date.getDate();
         getEntry(dateToGet, options, function(error, response, dateToPost) {
@@ -117,5 +102,5 @@ while(date.getMonth() === month) {
             }
         });
     }
-    date.setDate(date.getDate() + 1);
+    date.setDate(date.getDate() + 1)
 }
